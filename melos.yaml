@@ -1,0 +1,36 @@
+name: bloc_samples
+
+packages:
+  - examples/**
+
+scripts:
+  # Tests without coverage
+
+  pub-get:
+    run: melos exec -c 1 --fail-fast  -- pub get 
+    description: Run pub get for all dart packages
+    select-package:
+      flutter: false
+
+  test:all:
+    run: melos run test:dart --no-select && melos run test:flutter --no-select
+    description: Run all tests
+
+  test:dart:
+    run: melos run pub-get --no-select && melos exec -c 1 --fail-fast -- dart test --test-randomize-ordering-seed random 
+    description: Run all tests for dart dependent projects
+    select-package:
+      flutter: false
+      dir-exists: test
+
+
+  test:flutter:
+    run: melos exec -c 1 --fail-fast -- flutter test --test-randomize-ordering-seed random
+    description: Run all tests for flutter dependent projects
+    select-package:
+      flutter: true
+      dir-exists: test
+
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
