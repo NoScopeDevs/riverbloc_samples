@@ -37,6 +37,7 @@ class SharedPreferencesRepository implements PreferencesRepository {
       }
 
       throw TypeError();
+      // ignore: avoid_catching_errors
     } on TypeError {
       throw PreferenceFailure(PreferenceFailureReason.typeNotSupported);
     } on PreferenceFailure {
