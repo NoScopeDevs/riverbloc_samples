@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preference_navigation/preferences/preferences.dart';
 import 'package:preference_navigation/start/start.dart';
 
@@ -22,32 +22,34 @@ class HomePage extends StatelessWidget {
 /// {@template home_view}
 /// Handles the user interfaces for [PreferencesBloc] states.
 /// {@endtemplate}
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerWidget {
   /// {@macro home_view}
   const HomeView({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<PreferencesState>(preferencesBlocProvider, (state) async {
+      if (state is PreferencesEmpty) {
+        await Navigator.of(context).push<void>(StartPage.go());
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your saved values'),
         actions: [
           IconButton(
             onPressed: () {
-              context.read<PreferencesBloc>().add(PreferencesCleared());
+              ref.read(preferencesBlocProvider.bloc).add(PreferencesCleared());
             },
             icon: const Icon(Icons.clear),
           )
         ],
       ),
       body: Center(
-        child: BlocConsumer<PreferencesBloc, PreferencesState>(
-          listener: (_, state) async {
-            if (state is PreferencesEmpty) {
-              await Navigator.of(context).push<void>(StartPage.go());
-            }
-          },
-          builder: (context, state) {
+        child: Consumer(
+          builder: (context, ref, _) {
+            final state = ref.watch(preferencesBlocProvider);
             if (state is PreferencesLoaded) {
               return PreferencesList(preferences: state.preferences);
             }

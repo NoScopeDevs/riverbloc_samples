@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:preference_navigation/preferences/preferences.dart';
 import 'package:preferences_repository/preferences_repository.dart';
@@ -21,21 +21,17 @@ extension PumpApp on WidgetTester {
     PreferencesBloc? preferencesBloc,
   }) {
     return pumpWidget(
-      MultiRepositoryProvider(
-        providers: [
-          RepositoryProvider.value(
-            value: preferencesRepository ?? MockSharedPreferencesRepository(),
+      ProviderScope(
+        overrides: [
+          preferencesBlocProvider.overrideWithValue(
+            preferencesBloc ?? MockPreferencesBloc(),
+          ),
+          preferencesRepositoryProvider.overrideWithValue(
+            preferencesRepository ?? MockSharedPreferencesRepository(),
           ),
         ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider.value(
-              value: preferencesBloc ?? MockPreferencesBloc(),
-            ),
-          ],
-          child: MaterialApp(
-            home: widget,
-          ),
+        child: MaterialApp(
+          home: widget,
         ),
       ),
     );

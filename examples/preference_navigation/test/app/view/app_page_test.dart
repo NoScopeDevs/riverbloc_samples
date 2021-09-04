@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preference_navigation/app/app.dart';
@@ -24,7 +25,15 @@ void main() {
       when(() => preferencesBloc.state).thenReturn(FakePreferencesState());
 
       await tester.pumpApp(
-        App(preferencesRepository: mockSharedPreferenceRepository),
+        ProviderScope(
+          overrides: [
+            preferencesRepositoryProvider.overrideWithValue(
+              mockSharedPreferenceRepository,
+            ),
+            preferencesBlocProvider.overrideWithValue(preferencesBloc),
+          ],
+          child: const App(),
+        ),
         preferencesBloc: preferencesBloc,
       );
       expect(find.byType(AppView), findsOneWidget);

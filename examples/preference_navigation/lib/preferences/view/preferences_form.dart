@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preference_navigation/preferences/preferences.dart';
 
 /// {@template preferences_form}
@@ -40,21 +40,23 @@ class _PreferencesFormState extends State<PreferencesForm> {
             validator: validate,
           ),
           const SizedBox(height: 20),
-          ElevatedButton.icon(
-            key: const Key('preferencesForm_save_elevatedButton'),
-            onPressed: () {
-              if (!formKey.currentState!.validate()) return;
-              formKey.currentState!.save();
+          Consumer(
+            builder: (context, ref, child) => ElevatedButton.icon(
+              key: const Key('preferencesForm_save_elevatedButton'),
+              onPressed: () {
+                if (!formKey.currentState!.validate()) return;
+                formKey.currentState!.save();
 
-              final key = keyController.text;
-              final value = valueController.text;
+                final key = keyController.text;
+                final value = valueController.text;
 
-              context
-                  .read<PreferencesBloc>()
-                  .add(PreferenceAdded(<String, dynamic>{key: value}));
-            },
-            icon: const Icon(Icons.save),
-            label: const Text('Save'),
+                ref
+                    .read(preferencesBlocProvider.bloc)
+                    .add(PreferenceAdded(<String, dynamic>{key: value}));
+              },
+              icon: const Icon(Icons.save),
+              label: const Text('Save'),
+            ),
           ),
         ],
       ),

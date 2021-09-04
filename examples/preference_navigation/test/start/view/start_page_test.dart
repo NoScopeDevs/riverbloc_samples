@@ -50,6 +50,7 @@ void main() {
           ),
           preferencesBloc: preferencesBloc,
         );
+
         verify(
           () => navigator.pushReplacement(any(that: isRoute<void>())),
         ).called(1);

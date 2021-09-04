@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preference_navigation/home/home.dart';
 import 'package:preference_navigation/preferences/preferences.dart';
 
@@ -24,29 +24,26 @@ class StartPage extends StatelessWidget {
 /// {@template start_view}
 /// Handles the initial page user interfaces.
 /// {@endtemplate}
-class StartView extends StatelessWidget {
+class StartView extends ConsumerWidget {
   /// {@macro start_view}
   const StartView({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(preferencesBlocProvider);
+
+    ref.listen<PreferencesState>(preferencesBlocProvider, (state) async {
+      if (state is PreferencesLoaded) {
+        await Navigator.of(context).pushReplacement<void, void>(
+          HomePage.go(),
+        );
+      }
+    });
+
     return Scaffold(
       body: Center(
-        child: BlocConsumer<PreferencesBloc, PreferencesState>(
-          listener: (_, state) async {
-            if (state is PreferencesLoaded) {
-              await Navigator.of(context).pushReplacement<void, void>(
-                HomePage.go(),
-              );
-            }
-            if (state is PreferencesError) {
-              // ignore: use_build_context_synchronously
-              await Navigator.of(context).pushReplacement<void, void>(
-                PreferencesPage.go(),
-              );
-            }
-          },
-          builder: (_, state) {
+        child: Builder(
+          builder: (_) {
             if (state is PreferencesInitial) return const Text('Hello there.');
             if (state is PreferencesLoaded) return const Text('Prefs loaded.');
             if (state is PreferencesError) return const Text('Oops.');

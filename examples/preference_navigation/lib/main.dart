@@ -5,8 +5,10 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preference_navigation/app/app.dart';
 import 'package:preference_navigation/app/app_bloc_observer.dart';
+import 'package:preference_navigation/preferences/preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_repository/shared_preferences_repository.dart';
 
@@ -23,7 +25,14 @@ Future<void> main() async {
       );
 
       runApp(
-        App(preferencesRepository: preferencesRepository),
+        ProviderScope(
+          overrides: [
+            preferencesRepositoryProvider.overrideWithValue(
+              preferencesRepository,
+            )
+          ],
+          child: const App(),
+        ),
       );
     },
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
