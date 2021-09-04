@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preference_navigation/preferences/preferences.dart';
 import 'package:preferences_repository/preferences_repository.dart';
+import 'package:riverbloc/riverbloc.dart';
 
 import '../../helpers/helpers.dart';
 
@@ -15,6 +16,34 @@ void main() {
 
     setUp(() {
       preferencesRepository = MockSharedPreferencesRepository();
+    });
+
+    group('Providers', () {
+      test('preferencesBlocProvider is a PreferencesBloc', () {
+        final container = ProviderContainer(overrides: [
+          preferencesRepositoryProvider.overrideWithValue(
+            preferencesRepository,
+          ),
+        ]);
+
+        final bloc = container.read(preferencesBlocProvider.bloc);
+
+        expect(bloc, isA<PreferencesBloc>());
+      });
+
+      test('preferencesRepositoryProvider throws UnimplementedError', () {
+        final container = ProviderContainer();
+        expect(
+          () => container.read(preferencesRepositoryProvider),
+          throwsA(
+            isA<ProviderException>().having(
+              (e) => e.exception,
+              'is UnimplementedError',
+              isA<UnimplementedError>(),
+            ),
+          ),
+        );
+      });
     });
 
     group('PreferenceAdded', () {
