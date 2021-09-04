@@ -11,16 +11,24 @@ dependencies:
   equatable: ^2.0.3
   flutter:
     sdk: flutter
-  flutter_bloc: ^7.1.0
+  flutter_riverpod: ^1.0.0-dev.7
   hive: ^2.0.4
   hive_preferences_repository:
     path: packages/preferences/hive_preferences_repository
   path_provider: ^2.0.2
   preferences_repository:
     path: packages/preferences/preferences_repository
+  riverbloc: ^1.0.0-dev.1
   shared_preferences: ^2.0.6
   shared_preferences_repository:
     path: packages/preferences/shared_preferences_repository
+
+dependency_overrides:
+  riverbloc:
+    git:
+      url: https://github.com/elianmortega/riverbloc.git
+      path: packages/riverbloc
+      ref: feat/bloc-v7.2
 
 dev_dependencies:
   bloc_test: ^8.1.0

@@ -3,9 +3,23 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:preferences_repository/preferences_repository.dart';
+import 'package:riverbloc/riverbloc.dart';
 
 part 'preferences_event.dart';
 part 'preferences_state.dart';
+
+/// [Provider] that gives access to [PreferencesRepository]
+final preferencesRepositoryProvider = Provider<PreferencesRepository>(
+  (ref) => throw UnimplementedError(
+    'Override with a real implementation, on the ProviderScope(overrides)',
+  ),
+);
+
+/// [BlocProvider] that gives access to [PreferencesBloc]
+final preferencesBlocProvider = BlocProvider<PreferencesBloc, PreferencesState>(
+  (ref) => PreferencesBloc(repository: ref.read(preferencesRepositoryProvider))
+    ..add(PreferencesChecked()),
+);
 
 /// {@template preferences_bloc}
 /// [Bloc] that handles preferences business logic.
